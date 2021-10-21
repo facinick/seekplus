@@ -264,6 +264,7 @@ export class SeekBar extends React.Component<Props, State> {
           <p>max: {max}</p>
           <p>step: {this.props.step}</p>
           { this.interactiveDiv && <p>progresbar width with padding: {this.interactiveDiv.clientWidth}</p>}
+          { this.interactiveDiv && <p>progresbar width without padding: {this.interactiveDiv.clientWidth - 2 * interactivePaddingX}</p>}
         </div>
       </>
     );
