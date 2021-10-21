@@ -262,6 +262,7 @@ export class SeekBar extends React.Component<Props, State> {
           <p>focused: {this.state.dotFocused ? "YES" : "NO"}</p>
           <p>min: {min}</p>
           <p>max: {max}</p>
+          <p>step: {this.props.step}</p>
         </div>
       </>
     );
