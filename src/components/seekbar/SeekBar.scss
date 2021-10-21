@@ -26,6 +26,7 @@ $progress-all-color: white;
 }
 
 #interactive {
+    touch-action: none;
     width: 100%;
     display: flex;
     justify-content: center;
