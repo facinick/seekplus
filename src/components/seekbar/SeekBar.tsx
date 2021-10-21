@@ -1,6 +1,9 @@
 import * as React from 'react';
 import './SeekBar.scss';
 interface Props {
+
+  onChange: (value: number) => void;
+
   disable: boolean;
   isTouch: boolean;
 
@@ -131,9 +134,7 @@ export class SeekBar extends React.Component<Props, State> {
 
   startDragging = (event: any) => {
     this.setvalueFromPointerEvent(event);
-
-    document.addEventListener('pointerup', this.stopDragging);
-    document.addEventListener('pointermove', this.keepDragging);
+    this.interactiveDiv?.setPointerCapture(event.pointerId);
     this.setState({ dragging: true, });
     setTimeout(() => { this.progressDotButton?.focus(); }, 1);
   }
@@ -161,9 +162,6 @@ export class SeekBar extends React.Component<Props, State> {
     }
     this.setState({
       dragging: false,
-    }, () => {
-      document.removeEventListener('pointerup', this.stopDragging);
-      document.removeEventListener('pointermove', this.keepDragging);
     })
   }
 
@@ -204,8 +202,7 @@ export class SeekBar extends React.Component<Props, State> {
     const value = this.state.value;
     const valuePercentage = value * 100 / (this.props.max);
     const hoveredWidth = this.state.hoveredWidth;
-    const { max, min } = this.props;
-
+    const { max, min , isTouch} = this.props;
 
     return (
       <>
@@ -227,10 +224,12 @@ export class SeekBar extends React.Component<Props, State> {
             boxSizing: `border-box`,
           }}
           ref={this.setInteractiveElement}
-          onMouseEnter={this.onHoverStart}
-          onMouseLeave={this.onHoverEnd}
-          onMouseMove={this.onHover}
+          onMouseEnter={!isTouch ? this.onHoverStart : ()=>{}}
+          onMouseLeave={!isTouch ? this.onHoverEnd: ()=>{}}
+          onMouseMove={!isTouch ? this.onHover: ()=>{}}
           onPointerDown={this.startDragging}
+          onPointerUp={this.stopDragging}
+          onPointerMove={this.keepDragging}
         >
           <div id="progress-bar">
 
@@ -263,6 +262,7 @@ export class SeekBar extends React.Component<Props, State> {
           <p>min: {min}</p>
           <p>max: {max}</p>
           <p>step: {this.props.step}</p>
+          {this.props.isTouch && <p>Touch</p>} 
           { this.interactiveDiv && <p>progresbar width with padding: {this.interactiveDiv.clientWidth}</p>}
           { this.interactiveDiv && <p>progresbar width without padding: {this.interactiveDiv.clientWidth - 2 * interactivePaddingX}</p>}
         </div>
@@ -313,7 +313,9 @@ export class SeekBar extends React.Component<Props, State> {
       return;
     }
 
-    this.setState({ value: valueRound(value, this.props.step) });
+    this.setState({ value: valueRound(value, this.props.step) }, () => {
+      this.props.onChange(this.state.value);
+    });
   }
 
   sethoveredWidth = (value: number): void => {
