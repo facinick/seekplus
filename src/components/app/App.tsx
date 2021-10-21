@@ -9,13 +9,11 @@ function App() {
   const totalDuration = 180;
   
   return (
-    <div>
-      <main>
+    <main>
         <div id="progress-container">
           <SeekBar disable={false} isTouch={false} value={currentDuration} min={0} max={totalDuration} step={1} />
         </div>
       </main>
-    </div>
   );
 }
 
