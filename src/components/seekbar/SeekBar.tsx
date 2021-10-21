@@ -230,6 +230,7 @@ export class SeekBar extends React.Component<Props, State> {
           onMouseLeave={!isTouch ? this.onHoverEnd: ()=>{}}
           onMouseMove={!isTouch ? this.onHover: ()=>{}}
           onPointerDown={this.startDragging}
+          aria-label={`${this.state.value}`}
           onPointerUp={this.stopDragging}
           onPointerMove={this.keepDragging}
         >
@@ -246,6 +247,8 @@ export class SeekBar extends React.Component<Props, State> {
               onFocus={() => this.setState({ dotFocused: true })}
               onBlur={() => this.setState({ dotFocused: false })}
               tabIndex={0}
+              role='slider'
+              aria-label={`${this.state.value}`}
               id="progress-dot"
               style={{ left: `${valuePercentage}%`, }}
             />
