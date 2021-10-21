@@ -1,0 +1,104 @@
+$progress-dot-size-active: 30px;
+$progress-bar-scale-active: 2;
+$progress-bar-height-inactive: 15px;
+$progress-interactive-area: 50px;
+$progress-color: #4285F4;
+$progress-dot-color: #DB4437;
+$progress-hover-color: #F4B400;
+$progress-all-color: white;
+
+@mixin center() {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin progress-dot-active() {
+    top: 50%;
+    width: $progress-dot-size-active;
+    height: $progress-dot-size-active;
+    transform: translateY(-50%) translateX(-50%);
+    background-color: $progress-dot-color;
+}
+
+@mixin progress-bar-active() {
+    transform: scaleY($progress-bar-scale-active);
+}
+
+#interactive {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: $progress-interactive-area;
+    cursor: pointer;
+
+    #progress-bar {
+        width: 100%;
+        position: relative;
+    }
+
+    #progress-bar-list {
+        height: $progress-bar-height-inactive;
+        width: 100%;
+        transition: 0.2s ease-out transform;
+        position: relative;
+
+        #played {
+            position: absolute;
+            height: 100%;
+            background: $progress-color;
+            z-index: 3;
+        }
+
+        #hovered {
+            position: absolute;
+            height: 100%;
+            z-index: 2;
+            opacity: 0.4;
+            background: $progress-hover-color;
+        }
+
+        #all {
+            position: absolute;
+            height: 100%;
+            opacity: 0.2;
+            background-color: $progress-all-color;
+            z-index: 1;
+        }
+    }
+
+    #progress-dot {
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        border-radius: 50%;
+        top: 50%;
+        z-index: 1;
+        background-color: $progress-color;
+        transform: translateY(-50%) translateX(-50%);
+        transition: 0.2s ease-out transform, 0.2s ease-out width, 0.2s ease-out height;
+
+        &:hover{
+            cursor: grab;
+        }
+    }
+
+    &.dragging {
+        #progress-dot {
+            cursor: grabbing;
+        }
+    }
+
+    &.focused,
+    &.dragging,
+    &.hovering {
+        #progress-dot {
+            @include progress-dot-active;
+        }
+
+        #progress-bar-list {
+            @include progress-bar-active;
+        }
+    }
+}
