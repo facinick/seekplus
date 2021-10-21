@@ -162,6 +162,8 @@ export class SeekBar extends React.Component<Props, State> {
     }
     this.setState({
       dragging: false,
+    }, () => {
+      setTimeout(() => { this.progressDotButton?.blur(); }, 1);
     })
   }
 

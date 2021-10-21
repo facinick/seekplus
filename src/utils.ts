@@ -8,7 +8,6 @@ export const isTouch = (): boolean => {
       return true;
   }
   const query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
-
-  console.log(`device detection (isTouch): ${mq(query)}`);
+  
   return mq(query);
 };
