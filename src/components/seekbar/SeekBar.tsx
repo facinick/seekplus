@@ -4,7 +4,7 @@ interface Props {
   disable: boolean;
   isTouch: boolean;
 
-  value: number
+  value: number;
   min: number;
   max: number;
   step: number;
