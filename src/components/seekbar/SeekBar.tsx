@@ -51,15 +51,10 @@ const previous = (arr: Array<number>, x: number) => {
   return value;
 }
 
-const valuePercentage = (value: number, min: number, max: number): number => {
-  return Math.round(value / (max - min));
-}
-
 const valueRound = (value: number, step: number): number => {
   const inv = 1.0 / step;
   return Math.round(value * inv) / inv;
 }
-
 export class SeekBar extends React.Component<Props, State> {
 
   interactiveDiv: HTMLDivElement | undefined;
@@ -145,7 +140,7 @@ export class SeekBar extends React.Component<Props, State> {
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent(event);
-      // setTimeout(() => { this.progressDotButton?.focus(); }, 1);
+      setTimeout(() => { this.progressDotButton?.focus(); }, 1);
     }
   }
 
@@ -170,7 +165,7 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`stop dragging`);
       this.setState({ dragging: false, });
-      // setTimeout(() => { this.progressDotButton?.blur(); }, 1);
+      setTimeout(() => { this.progressDotButton?.blur(); }, 1);
     }
   }
 
@@ -248,7 +243,6 @@ export class SeekBar extends React.Component<Props, State> {
           onMouseMove={!isTouch ? this.onHover: ()=>{}}
           aria-label={`${this.state.value}`}
           onPointerDown={this.startDragging}
-          // onPointerMove={this.keepDragging}
           onPointerUp={this.stopDragging}
         >
           <div id="progress-bar">
