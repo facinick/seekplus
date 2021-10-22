@@ -75,7 +75,7 @@ $progress-all-color: white;
         position: absolute;
         border-radius: 50%;
         top: 50%;
-        z-index: 1;
+        z-index: 4;
         background-color: $progress-color;
         transform: translateY(-50%) translateX(-50%);
         transition: 0.2s ease-out transform, 0.2s ease-out width, 0.2s ease-out height;
@@ -90,6 +90,30 @@ $progress-all-color: white;
 
         #progress-bar-list {
             @include progress-bar-active;
+        }
+    }
+}
+
+#interactive.touch {
+    touch-action: none;
+
+    #progress-bar-list {
+
+        #hovered {
+            display: none;
+        }
+    }
+
+    #progress-dot {
+        @include progress-dot-active;
+    }
+
+    &.focused,
+    &.dragging,
+    &.hovering {
+        #progress-bar-list {
+            height: $progress-bar-height-inactive;
+            transform: none;
         }
     }
 }
