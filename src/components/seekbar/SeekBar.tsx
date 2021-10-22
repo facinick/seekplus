@@ -133,7 +133,7 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
-    if(this.interactiveDiv && this.state.dragging === false) {
+    if(this.interactiveDiv) {
       this.interactiveDiv.setPointerCapture(event.pointerId);
       this.interactiveDiv.addEventListener("pointermove", this.keepDragging);
       //@ts-ignore
@@ -143,13 +143,12 @@ export class SeekBar extends React.Component<Props, State> {
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent(event);
-      
       // setTimeout(() => { this.progressDotButton?.focus(); }, 1);
     }
   }
 
   keepDragging = (event: any): void => {
-    if(this.interactiveDiv && this.state.dragging === true) {
+    if(this.interactiveDiv) {
       console.log(`dragging`);
       //@ts-ignore
       document.getElementById("drag").innerText = "dragging";
@@ -158,7 +157,7 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   stopDragging = (event: any): void => {
-    if(this.interactiveDiv && this.state.dragging === true) {
+    if(this.interactiveDiv) {
       this.interactiveDiv.releasePointerCapture(event.pointerId);
       this.interactiveDiv.removeEventListener("pointermove", this.keepDragging);
       //@ts-ignore
