@@ -126,7 +126,7 @@ export class SeekBar extends React.Component<Props, State> {
 
   getPointervalue = (event: any): number => {
     if(this.interactiveDiv) {
-      return Math.max(Math.min(this.interactiveDiv.getBoundingClientRect().width, (event.pageX - this.interactiveDiv.getBoundingClientRect().left)), 0);
+      return Math.max(Math.min(this.interactiveDiv.getBoundingClientRect().width, (event.clientX - this.interactiveDiv.getBoundingClientRect().left)), 0);
     } else {
       return 0;
     }
@@ -147,24 +147,20 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   keepDragging = (event: React.PointerEvent<HTMLDivElement>): void => {
-    if(this.state.dragging) {
       console.log(`dragging`);
       this.setvalueFromPointerEvent(event);
-    }
   }
 
   stopDragging = (event: React.PointerEvent<HTMLDivElement>): void => {
-    if(this.state.dragging) {
-      console.log(`stop dragging`);
-      this.setState({ dragging: false, });
+    console.log(`stop dragging`);
+    this.setState({ dragging: false, });
 
-      //@ts-ignore
-      this.interactiveDiv.removeEventListener('pointermove', this.keepDragging);
-      //@ts-ignore
-      this.interactiveDiv.removeEventListener('pointerup', this.stopDragging);
+    //@ts-ignore
+    this.interactiveDiv.removeEventListener('pointermove', this.keepDragging);
+    //@ts-ignore
+    this.interactiveDiv.removeEventListener('pointerup', this.stopDragging);
 
-      setTimeout(() => { this.progressDotButton?.blur(); }, 1);
-    }
+    setTimeout(() => { this.progressDotButton?.blur(); }, 1);
   }
 
   setvalueFromPointerEvent = (event: any) => {
