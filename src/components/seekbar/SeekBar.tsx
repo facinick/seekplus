@@ -158,6 +158,7 @@ export class SeekBar extends React.Component<Props, State> {
 
   stopDragging = (event: any): void => {
     if(this.interactiveDiv) {
+      event.preventDefault();
       this.interactiveDiv.releasePointerCapture(event.pointerId);
       this.interactiveDiv.removeEventListener("pointermove", this.keepDragging);
       //@ts-ignore
