@@ -137,6 +137,8 @@ export class SeekBar extends React.Component<Props, State> {
       this.interactiveDiv.setPointerCapture(event.pointerId);
       //@ts-ignore
       document.getElementById("drag").innerText = "start dragging";
+      //@ts-ignore
+      document.getElementById("pointer").innerText = event.pointerId;
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent(event);
@@ -264,6 +266,7 @@ export class SeekBar extends React.Component<Props, State> {
         </div>
         <div id="debug">
           <p id="drag"> </p>
+          <p id="pointer"> </p>
           <p>value: {this.state.value}</p>
           <p>valuePercentage: {this.getValuePercentage()}%</p>
           <p>hoveredWidth: {hoveredWidth}px</p>
