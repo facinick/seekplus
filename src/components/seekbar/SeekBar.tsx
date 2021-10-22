@@ -133,7 +133,7 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
+    // event.preventDefault();
     if(this.interactiveDiv) {
       this.interactiveDiv.setPointerCapture(event.pointerId);
       this.interactiveDiv.addEventListener("pointermove", this.keepDragging);
@@ -141,6 +141,8 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("drag").innerText = "start dragging";
       //@ts-ignore
       document.getElementById("pointer").innerText = event.pointerId;
+       //@ts-ignore
+       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent(event);
@@ -154,6 +156,8 @@ export class SeekBar extends React.Component<Props, State> {
       console.log(`dragging`);
       //@ts-ignore
       document.getElementById("drag").innerText = "dragging";
+       //@ts-ignore
+       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       this.setvalueFromPointerEvent(event);
     }
   }
@@ -165,6 +169,8 @@ export class SeekBar extends React.Component<Props, State> {
       this.interactiveDiv.removeEventListener("pointermove", this.keepDragging);
       //@ts-ignore
       document.getElementById("drag").innerText = "stop dragging";
+      //@ts-ignore
+      document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`stop dragging`);
       this.setState({ dragging: false, });
       // setTimeout(() => { this.progressDotButton?.blur(); }, 1);
@@ -272,7 +278,7 @@ export class SeekBar extends React.Component<Props, State> {
         <div id="debug">
           <p id="drag"> </p>
           <p id="pointer"> </p>
-          <p id="capture">{this.interactiveDiv?.hasPointerCapture? "CAPTURING" : "NOT CAPTURING"} </p>
+          <p id="capture"></p>
           <p>value: {this.state.value}</p>
           <p>valuePercentage: {this.getValuePercentage()}%</p>
           <p>hoveredWidth: {hoveredWidth}px</p>
