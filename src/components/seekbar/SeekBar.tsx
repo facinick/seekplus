@@ -134,12 +134,13 @@ export class SeekBar extends React.Component<Props, State> {
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
     if(this.interactiveDiv && this.state.dragging === false) {
+      this.interactiveDiv.setPointerCapture(event.pointerId);
       //@ts-ignore
       document.getElementById("drag").innerText = "start dragging";
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent(event);
-      this.interactiveDiv.setPointerCapture(event.pointerId);
+      
       // setTimeout(() => { this.progressDotButton?.focus(); }, 1);
     }
   }
