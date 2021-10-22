@@ -138,6 +138,18 @@ $progress-all-color: white;
         @include progress-dot-active;
     }
 
+    &.focused {
+        #progress-dot{
+            box-shadow: none;
+        }
+    }
+
+    &.dragging {
+        #progress-dot{
+            box-shadow: rgba(0, 127, 255, 0.16) 0px 0px 0px 8px
+        }
+    }
+
     &.focused,
     &.dragging,
     &.hovering {
