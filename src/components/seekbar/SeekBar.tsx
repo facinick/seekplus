@@ -133,7 +133,6 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
-    // event.preventDefault();
     if(this.interactiveDiv) {
       this.interactiveDiv.setPointerCapture(event.pointerId);
       this.interactiveDiv.addEventListener("pointermove", this.keepDragging);
@@ -142,7 +141,7 @@ export class SeekBar extends React.Component<Props, State> {
       //@ts-ignore
       document.getElementById("pointer").innerText = event.pointerId;
        //@ts-ignore
-       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
+      document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent(event);
@@ -151,7 +150,6 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   keepDragging = (event: any): void => {
-    event.preventDefault();
     if(this.interactiveDiv) {
       console.log(`dragging`);
       //@ts-ignore
@@ -163,7 +161,6 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   stopDragging = (event: any): void => {
-    event.preventDefault();
     if(this.interactiveDiv) {
       this.interactiveDiv.releasePointerCapture(event.pointerId);
       this.interactiveDiv.removeEventListener("pointermove", this.keepDragging);
@@ -254,7 +251,7 @@ export class SeekBar extends React.Component<Props, State> {
           // onPointerMove={this.keepDragging}
           onPointerUp={this.stopDragging}
         >
-          <div id="progress-bar">
+          {/* <div id="progress-bar">
 
             <div id="progress-bar-list">
               {<div id="played" style={{ width: `${this.getValuePercentage()}%` }} />}
@@ -272,7 +269,7 @@ export class SeekBar extends React.Component<Props, State> {
               id="progress-dot"
               style={{ left: `${valuePercentage}%`, }}
             />
-          </div>
+          </div> */}
 
         </div>
         <div id="debug">
