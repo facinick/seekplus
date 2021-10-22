@@ -134,6 +134,7 @@ export class SeekBar extends React.Component<Props, State> {
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
     if(this.interactiveDiv && this.state.dragging === false) {
+      document.getElementById("drag")!.innerText = "start dragging";
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent(event);
@@ -148,11 +149,13 @@ export class SeekBar extends React.Component<Props, State> {
 
   keepDragging = (event: any): void => {
       console.log(`dragging`);
+      document.getElementById("drag")!.innerText = "dragging";
       this.setvalueFromPointerEvent(event);
   }
 
   stopDragging = (event: any): void => {
     if(this.interactiveDiv) {
+      document.getElementById("drag")!.innerText = "stop dragging";
       console.log(`stop dragging`);
       this.setState({ dragging: false, });
   
@@ -261,6 +264,7 @@ export class SeekBar extends React.Component<Props, State> {
 
         </div>
         <div id="debug">
+          <p id="drag"> </p>
           <p>value: {this.state.value}</p>
           <p>valuePercentage: {this.getValuePercentage()}%</p>
           <p>hoveredWidth: {hoveredWidth}px</p>
