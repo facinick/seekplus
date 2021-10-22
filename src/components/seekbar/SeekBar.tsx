@@ -25,26 +25,30 @@ const interactivePaddingY = 0;
 const trackHeightInactive = 6;
 const trackScaleOnActive = 2;
 
-const next = (arr: Array<number>, x: number) => {
-  let value = Number.MAX_VALUE;
+const next = (arr: Array<number>, currentValue: number) => {
+  let nextValue = Math.max(...arr);
   for (let i = 0; i < arr.length; i++) {
-    if (x <= arr[i] && arr[i] <= value) {
-      value = arr[i]
+    const mark = arr[i];
+    if (currentValue < mark && mark < nextValue) {
+      nextValue = mark
     }
   }
-  value = Math.min(Math.max.apply(0, arr), value);
-  return value;
+  console.log(nextValue);
+  nextValue = Math.min(Math.max.apply(0, arr),nextValue);
+  return nextValue;
 }
 
-const previous = (arr: Array<number>, x: number) => {
-  let value = Number.MIN_VALUE;
+const previous = (arr: Array<number>, currentValue: number) => {
+  let prevValue = Math.min(...arr);
   for (let i = 0; i < arr.length; i++) {
-    if (x >= arr[i] && arr[i] >= value) {
-      value = arr[i]
+    const mark = arr[i];
+    if (currentValue > mark && mark > prevValue) {
+      prevValue = mark
     }
   }
-  value = Math.max(Math.min.apply(0, arr), value);
-  return value;
+  console.log(prevValue);
+  prevValue = Math.max(Math.min.apply(0, arr),prevValue);
+  return prevValue;
 }
 
 const valueRound = (value: number, step: number): number => {
@@ -63,7 +67,7 @@ export class SeekBar extends React.Component<Props, State> {
       hovering: false,
       value: this.props.value,
       hoveredWidth: 0,
-      marks: [props.min, props.max],
+      marks: [props.min, props.max, 20],
     };
     this.setupKeyboardControl();
   }
@@ -130,6 +134,31 @@ export class SeekBar extends React.Component<Props, State> {
     }
   }
 
+  addMark = (mark: number) => {
+    if(this.state.marks.indexOf(mark) > -1) {
+      console.log(`mark ${mark} already exists...`);
+    } else {
+      const marks = this.state.marks;
+      marks.push(mark);
+      this.setState({
+        marks,
+      })
+    }
+  }
+
+  removeMark = (mark: number) => {
+    const marks = this.state.marks;
+    const index = marks.indexOf(mark);
+    if(index > -1) {
+      marks.splice(index, 1);
+      this.setState({
+        marks,
+      })
+    } else {
+      console.log(`mark ${mark} doesn't exist...`); 
+    }
+  }
+
   keepDragging = (event: any): void => {
     if(this.interactiveDiv) {
       console.log(`dragging`);
@@ -185,6 +214,14 @@ export class SeekBar extends React.Component<Props, State> {
     return this.state.value * 100 / this.props.max;
   }
 
+  getMarkPercentage = (mark: number) => {
+      const value = mark;
+      const max = this.props.max - this.props.min;
+      let percentage = (value) / (max) * 100;
+      return percentage;
+
+  }
+
   render(): JSX.Element {
 
     const value = this.state.value;
@@ -194,7 +231,7 @@ export class SeekBar extends React.Component<Props, State> {
     const disableHoverInteractions = isTouch || disable;
     const disablePointerInteractions = disable;
 
-    const {hovering, dragging} = this.state;
+    const {hovering, dragging, marks} = this.state;
     const focused = document.activeElement === this.interactiveDiv;
 
     return (
@@ -229,9 +266,12 @@ export class SeekBar extends React.Component<Props, State> {
           <div id="progress-bar">
 
             <div id="progress-bar-list">
-              {<div id="played" style={{ width: `${this.getValuePercentage()}%` }} />}
-              {<div id="hovered" style={{ width: `${this.getHoveredPercentage()}%` }} />}
               <div id="all" style={{ width: `100%` }} />
+              <div id="hovered" style={{ width: `${this.getHoveredPercentage()}%` }} />
+              <div id="played" style={{ width: `${this.getValuePercentage()}%` }} />
+              {marks.map(mark => (
+                <div key={mark} style={{left: `${this.getMarkPercentage(mark)}%`}} className={mark === min || mark === max ? '' : 'mark'} />
+              ))}
             </div>
 
             <div
@@ -271,11 +311,13 @@ export class SeekBar extends React.Component<Props, State> {
 
   shiftNext = (): void => {
     const newValue = next(this.state.marks, this.state.value);
+
     this.setValue(newValue);
   }
 
   shiftPrevious = (): void => {
     const newValue = previous(this.state.marks, this.state.value);
+
     this.setValue(newValue);
   }
 

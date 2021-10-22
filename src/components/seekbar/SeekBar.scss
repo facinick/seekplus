@@ -54,11 +54,12 @@ $progress-all-color: white;
         position: relative;
         pointer-events: none;
 
-        #played {
+        #all {
             position: absolute;
             height: 100%;
-            background: $progress-color;
-            z-index: 3;
+            opacity: 0.2;
+            background-color: $progress-all-color;
+            z-index: 1;
             pointer-events: none;
         }
 
@@ -71,13 +72,20 @@ $progress-all-color: white;
             pointer-events: none;
         }
 
-        #all {
+        #played {
             position: absolute;
             height: 100%;
-            opacity: 0.2;
-            background-color: $progress-all-color;
-            z-index: 1;
+            background: $progress-color;
+            z-index: 3;
             pointer-events: none;
+        }
+
+        .mark{
+            width: 1px;
+            height: 100%;
+            background-color: chartreuse;
+            position: absolute;
+            z-index: 3;
         }
     }
 
