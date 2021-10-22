@@ -75,6 +75,7 @@ $progress-all-color: white;
         position: absolute;
         border-radius: 50%;
         top: 50%;
+        pointer-events: none;
         z-index: 4;
         background-color: $progress-color;
         transform: translateY(-50%) translateX(-50%);
