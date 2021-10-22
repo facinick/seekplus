@@ -41,7 +41,6 @@
 #progress-container {
 	width: 500px;
 	background: #312f2f;
-	height: 300px;
 }
 
 main {
@@ -65,11 +64,13 @@ main {
 
 #debug {
 	color: white;
-	*{
-		outline: none;
-	}
+	position: absolute;
+    left: 0;
+    TOP: 0;
+    padding: 10px;
 }
-
 *{
-	outline: 0.5px solid green;
+	outline: 0;
+	border: 0;
+	margin: 0;
 }

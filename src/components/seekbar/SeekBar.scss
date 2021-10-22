@@ -1,10 +1,10 @@
-$progress-dot-size-active: 30px;
+$progress-dot-size-active: 14px;
 $progress-bar-scale-active: 2;
-$progress-bar-height-inactive: 15px;
-$progress-interactive-area: 50px;
-$progress-color: #4285F4;
-$progress-dot-color: #DB4437;
-$progress-hover-color: #F4B400;
+$progress-bar-height-inactive: 2px;
+$progress-interactive-area: 16px;
+$progress-color: #1d6bdd;
+$progress-dot-color: #1d6bdd;
+$progress-hover-color: grey;
 $progress-all-color: white;
 
 @mixin center() {
@@ -25,6 +25,11 @@ $progress-all-color: white;
     transform: scaleY($progress-bar-scale-active);
 }
 
+@mixin disable() {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
 #interactive {
     touch-action: none;
     width: 100%;
@@ -33,6 +38,8 @@ $progress-all-color: white;
     align-items: center;
     height: $progress-interactive-area;
     cursor: pointer;
+    box-sizing: border-box;
+    outline: 0.5px solid white;
 
     #progress-bar {
         pointer-events: none;
@@ -98,6 +105,10 @@ $progress-all-color: white;
         #progress-bar-list {
             @include progress-bar-active;
         }
+    }
+
+    &.disable {
+        @include disable();
     }
 }
 

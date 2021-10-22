@@ -1,12 +1,9 @@
 import * as React from 'react';
 import './SeekBar.scss';
 interface Props {
-
   onChange: (value: number) => void;
-
   disable: boolean;
   isTouch: boolean;
-
   value: number;
   min: number;
   max: number;
@@ -19,13 +16,12 @@ interface State {
   hoveredWidth: number;
   marks: Array<number>;
   hovering: boolean;
-  dotFocused: boolean;
 }
 
 const knobInactive = 0;
-const knobActive = 15;
-const interactivePaddingX = knobActive * 3;
-const interactivePaddingY = 30;
+const knobActive = 14;
+const interactivePaddingX = 10;
+const interactivePaddingY = 0;
 const trackHeightInactive = 6;
 const trackScaleOnActive = 2;
 
@@ -65,7 +61,6 @@ export class SeekBar extends React.Component<Props, State> {
     this.state = {
       dragging: false,
       hovering: false,
-      dotFocused: false,
       value: this.props.value,
       hoveredWidth: 0,
       marks: [props.min, props.max],
@@ -76,7 +71,7 @@ export class SeekBar extends React.Component<Props, State> {
   setupKeyboardControl = (): void => {
     document.addEventListener('keyup', (event) => {
       event.preventDefault();
-      if (document.activeElement !== this.progressDotButton) {
+      if (document.activeElement !== this.interactiveDiv) {
         return;
       }
 
@@ -108,23 +103,14 @@ export class SeekBar extends React.Component<Props, State> {
   onHover = (event: any) => {
     let currentTargetRect = event.currentTarget.getBoundingClientRect();
     let event_offsetX = event.clientX - currentTargetRect.left;
-    this.sethoveredWidth(event_offsetX + 1);
+    this.sethoveredWidth(event_offsetX);
   }
-
 
   onHoverEnd = (event: any) => {
     this.setState({
       hovering: false,
     });
     this.sethoveredWidth(0);
-  }
-
-  getPointervalue = (event: any): number => {
-    if(this.interactiveDiv) {
-      return Math.max(Math.min(this.interactiveDiv.getBoundingClientRect().width, (event.clientX - this.interactiveDiv.getBoundingClientRect().left)), 0);
-    } else {
-      return 0;
-    }
   }
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -139,7 +125,7 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`start dragging`);
       this.setState({ dragging: true, });
-      this.setvalueFromPointerEvent(event);
+      this.setvalueFromPointerEvent();
       setTimeout(() => { this.progressDotButton?.focus(); }, 1);
     }
   }
@@ -150,8 +136,8 @@ export class SeekBar extends React.Component<Props, State> {
       //@ts-ignore
       document.getElementById("drag").innerText = "dragging";
        //@ts-ignore
-       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
-      this.setvalueFromPointerEvent(event);
+      document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
+      this.setvalueFromPointerEvent();
     }
   }
 
@@ -169,12 +155,11 @@ export class SeekBar extends React.Component<Props, State> {
     }
   }
 
-  setvalueFromPointerEvent = (event: any) => {
+  setvalueFromPointerEvent = () => {
     if(this.interactiveDiv) {
-      const width = this.interactiveDiv.getBoundingClientRect().width;
-      const relativeValueInPixel = this.getPointervalue(event);
-      const mappedValuePercentage = this.getMappedvaluePercentage(relativeValueInPixel, width);
-      const newValue = (mappedValuePercentage * this.props.max / 100);
+      const value = this.state.hoveredWidth - interactivePaddingX;
+      const width = this.interactiveDiv.getBoundingClientRect().width - 2 * interactivePaddingX;
+      const newValue = (this.props.max - this.props.min) * (value / width);
       this.setValue(newValue);
     }
   }
@@ -183,28 +168,17 @@ export class SeekBar extends React.Component<Props, State> {
     if (this.interactiveDiv) {
       const value = this.state.hoveredWidth;
       const max = this.interactiveDiv.getBoundingClientRect().width;
-      return this.getMappedvaluePercentage(value, max);
+      let percentage = (value - interactivePaddingX) / (max - 2 * interactivePaddingX) * 100;
+      if(percentage < 0) {
+        percentage = 0;
+      }
+      if(percentage > 100) {
+        percentage = 100;
+      }
+      return percentage;
     } else {
       return 0;
     }
-  }
-
-  getMappedvalue = (oldValue: number, max: number): number => {
-    const smalMax = max - 2 * interactivePaddingX;
-    let newValue = oldValue;
-    if (newValue < interactivePaddingX) {
-      newValue = 0;
-    } else if (newValue > max - interactivePaddingX) {
-      newValue = smalMax;
-    } else {
-      newValue = newValue - interactivePaddingX;
-    }
-    return newValue;
-  }
-
-  getMappedvaluePercentage = (oldValue: number, max: number): number => {
-    const newValue = this.getMappedvalue(oldValue, max);
-    return newValue * 100 / (max - 2 * interactivePaddingX);
   }
 
   getValuePercentage = () => {
@@ -216,18 +190,24 @@ export class SeekBar extends React.Component<Props, State> {
     const value = this.state.value;
     const valuePercentage = value * 100 / (this.props.max);
     const hoveredWidth = this.state.hoveredWidth;
-    const { max, min ,isTouch} = this.props;
+    const { max, min ,isTouch, disable} = this.props;
+    const disableHoverInteractions = isTouch || disable;
+    const disablePointerInteractions = disable;
+
+    const {hovering, dragging} = this.state;
+    const focused = document.activeElement === this.interactiveDiv;
 
     return (
       <>
         <div
           id="interactive"
           className={
-            `${this.state.dragging ? 'dragging' : ''} 
-           ${this.state.hovering ? 'hovering' : ''}
-           ${document.activeElement === this.progressDotButton ? 'focused' : ''}
-           ${this.props.disable ? 'disable-interaction' : ''} 
-           ${this.props.isTouch ? 'touch' : ''}
+          `${dragging ? 'dragging' : ''} 
+           ${hovering ? 'hovering' : ''}
+           ${disablePointerInteractions ? 'disable' : ''}
+           ${focused ? 'focused' : ''}
+           ${disable ? 'disable-interaction' : ''} 
+           ${isTouch ? 'touch' : ''}
           `
           }
           style={{
@@ -235,15 +215,16 @@ export class SeekBar extends React.Component<Props, State> {
             paddingRight: `${interactivePaddingX}px`,
             paddingTop: `${interactivePaddingY}px`,
             paddingBottom: `${interactivePaddingY}px`,
-            boxSizing: `border-box`,
           }}
           ref={this.setInteractiveElement}
-          onMouseEnter={!isTouch ? this.onHoverStart : ()=>{}}
-          onMouseLeave={!isTouch ? this.onHoverEnd: ()=>{}}
-          onMouseMove={!isTouch ? this.onHover: ()=>{}}
+          onMouseEnter={disableHoverInteractions ? () => {} : this.onHoverStart }
+          onMouseLeave={disableHoverInteractions ? () => {} : this.onHoverEnd}
+          onMouseMove={disableHoverInteractions ? () => {} : this.onHover}
           aria-label={`${this.state.value}`}
-          onPointerDown={this.startDragging}
-          onPointerUp={this.stopDragging}
+          onPointerDown={disablePointerInteractions ? () => {} : this.startDragging}
+          onPointerUp={disablePointerInteractions ? () => {} : this.stopDragging}
+          tabIndex={0}
+          role='slider'
         >
           <div id="progress-bar">
 
@@ -255,10 +236,6 @@ export class SeekBar extends React.Component<Props, State> {
 
             <div
               ref={this.setProgressDotDiv}
-              onFocus={() => this.setState({ dotFocused: true })}
-              onBlur={() => this.setState({ dotFocused: false })}
-              tabIndex={0}
-              role='slider'
               aria-label={`${this.state.value}`}
               id="progress-dot"
               style={{ left: `${valuePercentage}%`, }}
@@ -266,6 +243,7 @@ export class SeekBar extends React.Component<Props, State> {
           </div>
 
         </div>
+
         <div id="debug">
           <p id="drag"> </p>
           <p id="pointer"> </p>
@@ -274,10 +252,10 @@ export class SeekBar extends React.Component<Props, State> {
           <p>valuePercentage: {this.getValuePercentage()}%</p>
           <p>hoveredWidth: {hoveredWidth}px</p>
           <p>hoveredPercentage: {this.getHoveredPercentage()}%</p>
-          {this.state.dragging && <p>dragging</p>}
-          {this.state.hovering && <p>hovering</p>}
+          {dragging && <p>dragging</p>}
+          {hovering && <p>hovering</p>}
           <p>marks: {this.state.marks}</p>
-          <p>focused: {this.state.dotFocused ? "YES" : "NO"}</p>
+          <p>focused: {focused ? "YES" : "NO"}</p>
           <p>min: {min}</p>
           <p>max: {max}</p>
           <p>step: {this.props.step}</p>
@@ -285,6 +263,8 @@ export class SeekBar extends React.Component<Props, State> {
           { this.interactiveDiv && <p>progresbar width with padding: {this.interactiveDiv.clientWidth}</p>}
           { this.interactiveDiv && <p>progresbar width without padding: {this.interactiveDiv.clientWidth - 2 * interactivePaddingX}</p>}
         </div>
+
+
       </>
     );
   }
@@ -323,37 +303,29 @@ export class SeekBar extends React.Component<Props, State> {
     if (value < this.props.min) {
       value = this.props.min;
     }
-
     if (value > this.props.max) {
       value = this.props.max;
     }
-
     if (this.state.value === valueRound(value, this.props.step)) {
       return;
     }
-
-    this.setState({ value: valueRound(value, this.props.step) }, () => {
+    this.setState({ value: valueRound(value, this.props.step)}, () => {
       this.props.onChange(this.state.value);
     });
   }
 
   sethoveredWidth = (value: number): void => {
-
     const width = this.interactiveDiv?.clientWidth;
-
     if (width) {
       if (value < 0) {
         value = 0;
       }
-
       if (value > width) {
         value = width;
       }
-
-      if (this.state.hoveredWidth === valueRound(value, 1.01)) {
+      if (this.state.hoveredWidth === valueRound(value, 1)) {
         return;
       }
-
       this.setState({ hoveredWidth: valueRound(value, 1) });
     }
   }
