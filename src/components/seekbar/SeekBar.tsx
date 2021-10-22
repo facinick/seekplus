@@ -140,12 +140,16 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   keepDragging = (event: any) => {
-    this.setvalueFromPointerEvent(event);
+    if(this.state.dragging) {
+      this.setvalueFromPointerEvent(event);
+    }
   }
 
   stopDragging = (event: any) => {
-    this.setState({ dragging: false, });
-    setTimeout(() => { this.progressDotButton?.blur(); }, 1);
+    if(this.state.dragging) {
+      this.setState({ dragging: false, });
+      setTimeout(() => { this.progressDotButton?.blur(); }, 1);
+    }
   }
 
   setvalueFromPointerEvent = (event: any) => {
@@ -195,7 +199,7 @@ export class SeekBar extends React.Component<Props, State> {
     const value = this.state.value;
     const valuePercentage = value * 100 / (this.props.max);
     const hoveredWidth = this.state.hoveredWidth;
-    const { max, min , isTouch} = this.props;
+    const { max, min ,isTouch} = this.props;
 
     return (
       <>
@@ -220,10 +224,10 @@ export class SeekBar extends React.Component<Props, State> {
           onMouseEnter={!isTouch ? this.onHoverStart : ()=>{}}
           onMouseLeave={!isTouch ? this.onHoverEnd: ()=>{}}
           onMouseMove={!isTouch ? this.onHover: ()=>{}}
-          onPointerDown={this.startDragging}
           aria-label={`${this.state.value}`}
-          onPointerUp={this.stopDragging}
+          onPointerDown={this.startDragging}
           onPointerMove={this.keepDragging}
+          onPointerUp={this.stopDragging}
         >
           <div id="progress-bar">
 
@@ -238,7 +242,7 @@ export class SeekBar extends React.Component<Props, State> {
               onFocus={() => this.setState({ dotFocused: true })}
               onBlur={() => this.setState({ dotFocused: false })}
               tabIndex={0}
-              // role='slider'
+              role='slider'
               aria-label={`${this.state.value}`}
               id="progress-dot"
               style={{ left: `${valuePercentage}%`, }}
