@@ -187,8 +187,7 @@ export class SeekBar extends React.Component<Props, State> {
   setvalueFromPointerEvent = (event?: any) => {
     if(this.interactiveDiv) {
       const left = this.state.hoveredWidth || event.clientX -  event.currentTarget.getBoundingClientRect().left;
-
-      const value = this.state.hoveredWidth || left - interactivePaddingX;
+      const value = (this.state.hoveredWidth || left) - interactivePaddingX;
       const width = this.interactiveDiv.getBoundingClientRect().width - 2 * interactivePaddingX;
       const newValue = (this.props.max - this.props.min) * (value / width);
       this.setValue(newValue);
