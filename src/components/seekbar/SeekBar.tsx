@@ -17,6 +17,7 @@ interface State {
   marks: Array<number>;
   hovering: boolean;
   focused: boolean;
+  animate: boolean;
 }
 
 const knobInactive = 0;
@@ -66,6 +67,7 @@ export class SeekBar extends React.Component<Props, State> {
       dragging: false,
       hovering: false,
       focused: false,
+      animate: false,
       value: this.props.value,
       hoveredWidth: 0,
       marks: [props.min, props.max, 20],
@@ -132,7 +134,7 @@ export class SeekBar extends React.Component<Props, State> {
        //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`start dragging`);
-      this.setState({ dragging: true, });
+      this.setState({ dragging: true, animate: true });
       this.setvalueFromPointerEvent(event);
       // setTimeout(() => { this.interactiveDiv?.focus(); }, 1);
     }
@@ -170,6 +172,7 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("drag").innerText = "dragging";
        //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
+      this.setState({animate: false})
       this.setvalueFromPointerEvent(event);
     }
   }
@@ -187,7 +190,7 @@ export class SeekBar extends React.Component<Props, State> {
       //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`stop dragging`);
-      this.setState({ dragging: false, });
+      this.setState({ dragging: false, animate: false });
       setTimeout(() => { this.interactiveDiv?.blur(); }, 1);
     }
   }
@@ -240,7 +243,7 @@ export class SeekBar extends React.Component<Props, State> {
     const disableHoverInteractions = isTouch || disable;
     const disablePointerInteractions = disable;
 
-    const { hovering, dragging, marks, focused } = this.state;
+    const { hovering, dragging, marks, focused, animate } = this.state;
 
     return (
       <>
@@ -252,6 +255,7 @@ export class SeekBar extends React.Component<Props, State> {
            ${disablePointerInteractions ? 'disable' : ''}
            ${focused ? 'focused' : ''}
            ${isTouch ? 'touch' : ''}
+           ${animate ? 'animate' : ''}
           `
           }
           style={{

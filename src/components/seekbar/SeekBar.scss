@@ -47,6 +47,14 @@ $progress-all-color: white;
         position: relative;
     }
 
+    &.animate {
+        #progress-bar-list {
+            #played {
+            transition: 0.2s ease-out width;
+        }
+    }
+    }
+
     #progress-bar-list {
         height: $progress-bar-height-inactive;
         width: 100%;
@@ -77,6 +85,7 @@ $progress-all-color: white;
             height: 100%;
             background: $progress-color;
             z-index: 3;
+            transition: none;
             pointer-events: none;
         }
 
@@ -101,6 +110,12 @@ $progress-all-color: white;
         background-color: $progress-color;
         transform: translateY(-50%) translateX(-50%);
         transition: 0.2s ease-out transform, 0.2s ease-out width, 0.2s ease-out height, 0.2s ease-out box-shadow;
+    }
+
+    &.animate {
+        #progress-dot {
+            transition: 0.2s ease-out transform, 0.2s ease-out width, 0.2s ease-out height, 0.2s ease-out box-shadow, 0.2s ease-out left;
+        }
     }
 
     &.focused {
