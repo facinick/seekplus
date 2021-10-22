@@ -251,7 +251,7 @@ export class SeekBar extends React.Component<Props, State> {
           // onPointerMove={this.keepDragging}
           onPointerUp={this.stopDragging}
         >
-          {/* <div id="progress-bar">
+          <div id="progress-bar">
 
             <div id="progress-bar-list">
               {<div id="played" style={{ width: `${this.getValuePercentage()}%` }} />}
@@ -269,7 +269,7 @@ export class SeekBar extends React.Component<Props, State> {
               id="progress-dot"
               style={{ left: `${valuePercentage}%`, }}
             />
-          </div> */}
+          </div>
 
         </div>
         <div id="debug">

@@ -35,6 +35,7 @@ $progress-all-color: white;
     cursor: pointer;
 
     #progress-bar {
+        pointer-events: none;
         width: 100%;
         position: relative;
     }
@@ -44,12 +45,14 @@ $progress-all-color: white;
         width: 100%;
         transition: 0.2s ease-out transform;
         position: relative;
+        pointer-events: none;
 
         #played {
             position: absolute;
             height: 100%;
             background: $progress-color;
             z-index: 3;
+            pointer-events: none;
         }
 
         #hovered {
@@ -58,6 +61,7 @@ $progress-all-color: white;
             z-index: 2;
             opacity: 0.4;
             background: $progress-hover-color;
+            pointer-events: none;
         }
 
         #all {
@@ -66,17 +70,18 @@ $progress-all-color: white;
             opacity: 0.2;
             background-color: $progress-all-color;
             z-index: 1;
+            pointer-events: none;
         }
     }
 
     #progress-dot {
         touch-action: none;
+        pointer-events: none;
         width: 0px;
         height: 0px;
         position: absolute;
         border-radius: 50%;
         top: 50%;
-        pointer-events: none;
         z-index: 4;
         background-color: $progress-color;
         transform: translateY(-50%) translateX(-50%);
