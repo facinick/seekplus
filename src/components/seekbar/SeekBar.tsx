@@ -133,6 +133,7 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
     if(this.interactiveDiv) {
       this.interactiveDiv.setPointerCapture(event.pointerId);
       this.interactiveDiv.addEventListener("pointermove", this.keepDragging);
@@ -148,6 +149,7 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   keepDragging = (event: any): void => {
+    event.preventDefault();
     if(this.interactiveDiv) {
       console.log(`dragging`);
       //@ts-ignore
@@ -157,8 +159,8 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   stopDragging = (event: any): void => {
+    event.preventDefault();
     if(this.interactiveDiv) {
-      event.preventDefault();
       this.interactiveDiv.releasePointerCapture(event.pointerId);
       this.interactiveDiv.removeEventListener("pointermove", this.keepDragging);
       //@ts-ignore
@@ -270,6 +272,7 @@ export class SeekBar extends React.Component<Props, State> {
         <div id="debug">
           <p id="drag"> </p>
           <p id="pointer"> </p>
+          <p id="capture">{this.interactiveDiv?.hasPointerCapture? "CAPTURING" : "NOT CAPTURING"} </p>
           <p>value: {this.state.value}</p>
           <p>valuePercentage: {this.getValuePercentage()}%</p>
           <p>hoveredWidth: {hoveredWidth}px</p>
