@@ -70,6 +70,7 @@ $progress-all-color: white;
     }
 
     #progress-dot {
+        touch-action: none;
         width: 0px;
         height: 0px;
         position: absolute;
