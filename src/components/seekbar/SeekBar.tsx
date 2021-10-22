@@ -133,17 +133,19 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   startDragging = (event: any) => {
+    this.setState({ dragging: true, });
     this.setvalueFromPointerEvent(event);
     this.interactiveDiv?.setPointerCapture(event.pointerId);
-    this.setState({ dragging: true, });
     setTimeout(() => { this.progressDotButton?.focus(); }, 1);
   }
 
   keepDragging = (event: any) => {
-    if (this.state.dragging === false) {
-      return;
-    }
     this.setvalueFromPointerEvent(event);
+  }
+
+  stopDragging = (event: any) => {
+    this.setState({ dragging: false, });
+    setTimeout(() => { this.progressDotButton?.blur(); }, 1);
   }
 
   setvalueFromPointerEvent = (event: any) => {
@@ -154,17 +156,6 @@ export class SeekBar extends React.Component<Props, State> {
       const newValue = (mappedValuePercentage * this.props.max / 100);
       this.setValue(newValue);
     }
-  }
-
-  stopDragging = (event: any) => {
-    if (this.state.dragging === false) {
-      return;
-    }
-    this.setState({
-      dragging: false,
-    }, () => {
-      setTimeout(() => { this.progressDotButton?.blur(); }, 1);
-    })
   }
 
   getHoveredPercentage = () => {
