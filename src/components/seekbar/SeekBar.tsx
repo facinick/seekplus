@@ -16,6 +16,7 @@ interface State {
   hoveredWidth: number;
   marks: Array<number>;
   hovering: boolean;
+  focused: boolean;
 }
 
 const knobInactive = 0;
@@ -58,13 +59,13 @@ const valueRound = (value: number, step: number): number => {
 export class SeekBar extends React.Component<Props, State> {
 
   interactiveDiv: HTMLDivElement | undefined;
-  progressDotButton: HTMLDivElement | undefined;
 
   constructor(props: Props) {
     super(props);
     this.state = {
       dragging: false,
       hovering: false,
+      focused: false,
       value: this.props.value,
       hoveredWidth: 0,
       marks: [props.min, props.max, 20],
@@ -130,7 +131,7 @@ export class SeekBar extends React.Component<Props, State> {
       console.log(`start dragging`);
       this.setState({ dragging: true, });
       this.setvalueFromPointerEvent();
-      setTimeout(() => { this.progressDotButton?.focus(); }, 1);
+      // setTimeout(() => { this.interactiveDiv?.focus(); }, 1);
     }
   }
 
@@ -180,7 +181,7 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`stop dragging`);
       this.setState({ dragging: false, });
-      setTimeout(() => { this.progressDotButton?.blur(); }, 1);
+      setTimeout(() => { this.interactiveDiv?.blur(); }, 1);
     }
   }
 
@@ -232,8 +233,7 @@ export class SeekBar extends React.Component<Props, State> {
     const disableHoverInteractions = isTouch || disable;
     const disablePointerInteractions = disable;
 
-    const {hovering, dragging, marks} = this.state;
-    const focused = document.activeElement === this.interactiveDiv;
+    const { hovering, dragging, marks, focused } = this.state;
 
     return (
       <>
@@ -244,7 +244,6 @@ export class SeekBar extends React.Component<Props, State> {
            ${hovering ? 'hovering' : ''}
            ${disablePointerInteractions ? 'disable' : ''}
            ${focused ? 'focused' : ''}
-           ${disable ? 'disable-interaction' : ''} 
            ${isTouch ? 'touch' : ''}
           `
           }
@@ -261,6 +260,8 @@ export class SeekBar extends React.Component<Props, State> {
           aria-label={`${this.state.value}`}
           onPointerDown={disablePointerInteractions ? () => {} : this.startDragging}
           onPointerUp={disablePointerInteractions ? () => {} : this.stopDragging}
+          onFocus={()=> this.setState({focused: true})}
+          onBlur={()=> this.setState({focused: false})}
           tabIndex={0}
           role='slider'
         >
@@ -276,10 +277,9 @@ export class SeekBar extends React.Component<Props, State> {
             </div>
 
             <div
-              ref={this.setProgressDotDiv}
               aria-label={`${this.state.value}`}
               id="progress-dot"
-              style={{ left: `${valuePercentage}%`, }}
+              style={{ left: `${this.getValuePercentage()}%`, }}
             />
           </div>
 
@@ -374,12 +374,6 @@ export class SeekBar extends React.Component<Props, State> {
   setInteractiveElement = (element: HTMLDivElement): void => {
     if (!this.interactiveDiv && element) {
       this.interactiveDiv = element;
-    }
-  };
-
-  setProgressDotDiv = (element: HTMLDivElement): void => {
-    if (!this.progressDotButton && element) {
-      this.progressDotButton = element;
     }
   };
 }
