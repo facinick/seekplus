@@ -166,7 +166,7 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("drag").innerText = "dragging";
        //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
-      this.setvalueFromPointerEvent();
+      this.setvalueFromPointerEvent(event);
     }
   }
 
@@ -184,9 +184,11 @@ export class SeekBar extends React.Component<Props, State> {
     }
   }
 
-  setvalueFromPointerEvent = () => {
+  setvalueFromPointerEvent = (event?: any) => {
     if(this.interactiveDiv) {
-      const value = this.state.hoveredWidth - interactivePaddingX;
+      const left = this.state.hoveredWidth || event.clientX -  event.currentTarget.getBoundingClientRect().left;
+
+      const value = this.state.hoveredWidth || left - interactivePaddingX;
       const width = this.interactiveDiv.getBoundingClientRect().width - 2 * interactivePaddingX;
       const newValue = (this.props.max - this.props.min) * (value / width);
       this.setValue(newValue);
@@ -303,8 +305,6 @@ export class SeekBar extends React.Component<Props, State> {
           { this.interactiveDiv && <p>progresbar width with padding: {this.interactiveDiv.clientWidth}</p>}
           { this.interactiveDiv && <p>progresbar width without padding: {this.interactiveDiv.clientWidth - 2 * interactivePaddingX}</p>}
         </div>
-
-
       </>
     );
   }
