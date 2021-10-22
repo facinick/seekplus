@@ -132,22 +132,37 @@ export class SeekBar extends React.Component<Props, State> {
     }
   }
 
-  startDragging = (event: any) => {
+  startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
     this.setState({ dragging: true, });
+    const element = event.target;
     this.setvalueFromPointerEvent(event);
     this.interactiveDiv?.setPointerCapture(event.pointerId);
+
+    //@ts-ignore
+    element.addEventListener('pointermove', this.keepDragging);
+    //@ts-ignore
+    element.addEventListener('pointerup', this.stopDragging);
+
     setTimeout(() => { this.progressDotButton?.focus(); }, 1);
   }
 
-  keepDragging = (event: any) => {
+  keepDragging = (event: React.PointerEvent<HTMLDivElement>) => {
     if(this.state.dragging) {
       this.setvalueFromPointerEvent(event);
     }
   }
 
-  stopDragging = (event: any) => {
+  stopDragging = (event: React.PointerEvent<HTMLDivElement>) => {
     if(this.state.dragging) {
       this.setState({ dragging: false, });
+
+      const element = event.target;
+
+      //@ts-ignore
+      element.removeEventListener('pointermove', this.keepDragging);
+      //@ts-ignore
+      element.removeEventListener('pointerup', this.stopDragging);
+
       setTimeout(() => { this.progressDotButton?.blur(); }, 1);
     }
   }
@@ -226,8 +241,6 @@ export class SeekBar extends React.Component<Props, State> {
           onMouseMove={!isTouch ? this.onHover: ()=>{}}
           aria-label={`${this.state.value}`}
           onPointerDown={this.startDragging}
-          onPointerMove={this.keepDragging}
-          onPointerUp={this.stopDragging}
         >
           <div id="progress-bar">
 
