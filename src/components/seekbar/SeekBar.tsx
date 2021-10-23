@@ -306,7 +306,7 @@ export class SeekBar extends React.Component<Props, State> {
           <p>hoveredPercentage: {this.getHoveredPercentage()}%</p>
           {dragging && <p>dragging</p>}
           {hovering && <p>hovering</p>}
-          <p>marks: {this.state.marks}</p>
+          <p>marks {this.state.marks.length}: { this.state.marks.sort().toString()}</p>
           <p>focused: {focused ? "YES" : "NO"}</p>
           <p>min: {min}</p>
           <p>max: {max}</p>
