@@ -1,10 +1,10 @@
-$progress-dot-size-active: 14px;
+$progress-dot-size-active: 30px;
 $progress-bar-scale-active: 2;
-$progress-bar-height-inactive: 2px;
+$progress-bar-height-inactive: 10px;
 $progress-interactive-area: 16px;
-$progress-color: #1d6bdd;
-$progress-dot-color: #1d6bdd;
-$progress-hover-color: grey;
+$progress-color: #DB4437;
+$progress-dot-color: #F4B400;
+$progress-hover-color: #0F9D58;
 $progress-all-color: white;
 
 @mixin center() {

@@ -3,44 +3,24 @@
 	height: 100%;
 }
 
-.App-logo {
-	height: 40vmin;
-	pointer-events: none;
-}
 
 @media (prefers-reduced-motion: no-preference) {
-	.App-logo {
-		animation: App-logo-spin infinite 20s linear;
-	}
+
 }
 
-.App-header {
-	background-color: #282c34;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	font-size: calc(10px + 2vmin);
-	color: white;
-	height: 20%;
-}
-
-.App-link {
-	color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
 
 #progress-container {
 	width: 500px;
 	background: #312f2f;
+}
+
+@media(max-width: 550px) {
+	#progress-container{
+		width: calc( 100% - 50px );
+	}
+	#progress-controls-container{
+		width: calc( 100% - 50px );
+	}	
 }
 
 main {
@@ -52,25 +32,30 @@ main {
 	flex-direction: column;
 }
 
-#info{
+#info {
 	margin: 30px;
 	color: white;
-}
-
-#progress-container{
-	background: #000000;
-	outline: none;
 }
 
 #debug {
 	color: white;
 	position: absolute;
-    left: 0;
-    TOP: 0;
-    padding: 10px;
+	left: 0;
+	top: 0;
+	padding: 10px;
+	pointer-events: none;
 }
-*{
+* {
 	outline: 0;
 	border: 0;
 	margin: 0;
+}
+#progress-controls-container{
+	width: 100%;
+	text-align: center;
+}	
+
+button {
+	width: 100px;
+	height: 20px;
 }

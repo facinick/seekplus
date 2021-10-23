@@ -22,8 +22,8 @@ interface State {
 
 const knobInactive = 0;
 const knobActive = 14;
-const interactivePaddingX = 10;
-const interactivePaddingY = 0;
+const interactivePaddingX = 30;
+const interactivePaddingY = 30;
 const trackHeightInactive = 6;
 const trackScaleOnActive = 2;
 
