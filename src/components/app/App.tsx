@@ -28,6 +28,12 @@ class App extends React.Component<Props, State> {
       step: 1,
       disable: false
     }
+
+    setInterval(()=>{
+      this.setState(({currentDuration}) => ({
+        currentDuration: (currentDuration + 1) % ( this.state.totalDuration + 1)
+      }));
+    }, 1000);
   }
 
   setSeekbar = (component: SeekBar): void => {

@@ -43,11 +43,11 @@ const next = (arr: Array<number>, currentValue: number) => {
   return nextValue;
 }
 
-const previous = (arr: Array<number>, currentValue: number) => {
+const previous = (arr: Array<number>, currentValue: number, step: number) => {
   let prevValue = Math.min(...arr);
   for (let i = 0; i < arr.length; i++) {
     const mark = arr[i];
-    if (currentValue > mark && mark > prevValue) {
+    if (currentValue > mark + 2 * step && mark > prevValue) {
       prevValue = mark
     }
   }
@@ -138,7 +138,6 @@ export class SeekBar extends React.Component<Props, State> {
       console.log(`start dragging`);
       this.setState({ dragging: true, animate: true });
       this.setvalueFromPointerEvent(event);
-      // setTimeout(() => { this.interactiveDiv?.focus(); }, 1);
     }
   }
 
@@ -167,6 +166,7 @@ export class SeekBar extends React.Component<Props, State> {
       //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       console.log(`stop dragging`);
+      this.setvalueFromPointerEvent(event);
       this.setState({ dragging: false, animate: false });
       setTimeout(() => { this.interactiveDiv?.blur(); }, 1);
     }
@@ -318,12 +318,11 @@ export class SeekBar extends React.Component<Props, State> {
 
   shiftNext = (): void => {
     const newValue = next([this.props.min, this.props.max, ...this.props.marks], this.state.value);
-
     this.setValue(newValue);
   }
 
   shiftPrevious = (): void => {
-    const newValue = previous([this.props.min, this.props.max, ...this.props.marks], this.state.value);
+    const newValue = previous([this.props.min, this.props.max, ...this.props.marks], this.state.value, this.props.step);
 
     this.setValue(newValue);
   }
@@ -358,8 +357,11 @@ export class SeekBar extends React.Component<Props, State> {
     if (this.state.value === valueRound(value, this.props.step)) {
       return;
     }
+
     this.setState({ value: valueRound(value, this.props.step) }, () => {
-      this.props.onChange(this.state.value);
+      if(!this.state.dragging) {
+        this.props.onChange(this.state.value);
+      }
     });
   }
 
