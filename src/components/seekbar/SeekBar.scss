@@ -7,6 +7,13 @@ $progress-dot-color: #F4B400;
 $progress-hover-color: #0F9D58;
 $progress-all-color: white;
 
+@mixin no-select() {
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;   
+}
+
 @mixin center() {
     display: flex;
     justify-content: center;
@@ -40,6 +47,8 @@ $progress-all-color: white;
     cursor: pointer;
     box-sizing: border-box;
     outline: 0.5px solid white;
+
+    @include no-select;
 
     #progress-bar {
         pointer-events: none;
@@ -108,6 +117,7 @@ $progress-all-color: white;
         top: 50%;
         z-index: 4;
         background-color: $progress-color;
+        @include no-select;
         transform: translateY(-50%) translateX(-50%);
         transition: 0.2s ease-out transform, 0.2s ease-out width, 0.2s ease-out height, 0.2s ease-out box-shadow;
     }

@@ -25,7 +25,7 @@ class App extends React.Component<Props, State> {
       currentDuration: 0,
       is_touch: isTouch(),
       totalDuration: 120,
-      step: 0.5,
+      step: 1,
       disable: false
     }
   }
