@@ -5,6 +5,7 @@ $progress-interactive-area: 16px;
 $progress-color: #DB4437;
 $progress-dot-color: #F4B400;
 $progress-hover-color: #0F9D58;
+$progress-range-color: #8b9dc3;
 $progress-all-color: white;
 
 @mixin no-select() {
@@ -74,7 +75,7 @@ $progress-all-color: white;
         #all {
             position: absolute;
             height: 100%;
-            opacity: 0.2;
+            opacity: 0.4;
             background-color: $progress-all-color;
             z-index: 1;
             pointer-events: none;
@@ -94,6 +95,7 @@ $progress-all-color: white;
             height: 100%;
             background: $progress-color;
             z-index: 3;
+            opacity: 1;
             transition: none;
             pointer-events: none;
         }
@@ -101,10 +103,20 @@ $progress-all-color: white;
         .mark{
             width: 1px;
             height: 100%;
+            opacity: 0.6;
             background-color: chartreuse;
             position: absolute;
             z-index: 3;
         }
+
+        .range{
+            height: 100%;
+            opacity: 0.6;
+            background-color: $progress-range-color;
+            position: absolute;
+            z-index: 3;
+        }
+
     }
 
     #progress-dot {

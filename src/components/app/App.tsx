@@ -42,21 +42,19 @@ class App extends React.Component<Props, State> {
     return (
       <main>
         <div id="progress-controls-container">
-          <input min={0} max={totalDuration} step={1} onChange={(event) => this.setState({ currentDuration: Number(event.target.value) })} value={currentDuration} id="seekbarinput" />
+          <input readOnly min={0} max={totalDuration} step={1} onChange={(event) => this.setState({ currentDuration: Number(event.target.value) })} value={currentDuration} id="seekbarinput" />
           <button onClick={(event) => { this.seekbar?.shiftDown() }} >{`-${step}`}</button>
           <button onClick={(event) => { this.seekbar?.shiftUp() }} >{`+${step}`}</button>
           <button onClick={(event) => { this.seekbar?.shiftMax() }} >{`Max`}</button>
           <button onClick={(event) => { this.seekbar?.shiftMin() }} >{`Min`}</button>
           <button onClick={(event) => { this.seekbar?.shiftPrevious() }} >{`Prev`}</button>
           <button onClick={(event) => { this.seekbar?.shiftNext() }} >{`Next`}</button>
-          <button onClick={(event) => { this.seekbar?.addMark(73) }} >{`add 73`}</button>
-          <button onClick={(event) => { this.seekbar?.removeMark(23) }} >{`remove 23`}</button>
-          <button onClick={(event) => { this.seekbar?.removeMark(73) }} >{`remove 73`}</button>
           <button onClick={() => this.setState((oldState: State) => ({ disable: !oldState.disable }))} >{`${disable ? "enable" : "disable"}`}</button>
         </div>
         <div id="progress-container">
-          <SeekBar ref={this.setSeekbar} onChange={(value: number) => this.setState({ currentDuration: value })} disable={disable} isTouch={is_touch} value={currentDuration} min={0} max={totalDuration} step={step} />
+          <SeekBar ranges={[{start: 60, end: 90}]} marks={[20, 34]} ref={this.setSeekbar} onChange={(value: number) => this.setState({ currentDuration: value })} disable={disable} isTouch={is_touch} value={currentDuration} min={0} max={totalDuration} step={step} />
         </div>
+        <span id="cur-value"> {currentDuration} </span>
       </main>
     );
   }
