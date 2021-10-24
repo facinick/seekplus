@@ -57,7 +57,7 @@ class App extends React.Component<Props, State> {
           <button onClick={() => this.setState((oldState: State) => ({ disable: !oldState.disable }))} >{`${disable ? "enable" : "disable"}`}</button>
         </div>
         <div id="progress-container">
-          <SeekBar ranges={[{start: 60, end: 90}]} marks={[20, 34]} ref={this.setSeekbar} onChange={(value: number) => { 
+          <SeekBar onHover={(value) => console.log(value)} ranges={[{start: 60, end: 90}]} marks={[20, 34]} ref={this.setSeekbar} onChange={(value: number) => { 
             this.setState({ currentDuration: value }); }} disable={disable} isTouch={is_touch} value={currentDuration} min={0} max={totalDuration} step={step} />
         </div>
         <span id="cur-value"> {currentDuration} </span>

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { start } from 'repl';
 import './SeekBar.scss';
 interface Props {
   onChange: (value: number) => void;
+  onHover: (value: number) => void;
   disable: boolean;
   isTouch: boolean;
   value: number;
@@ -193,8 +193,14 @@ export class SeekBar extends React.Component<Props, State> {
       if (percentage > 100) {
         percentage = 100;
       }
+      if(this.state.hovering) {
+        this.props.onHover(percentage);
+      }
       return percentage;
     } else {
+      if(this.state.hovering) {
+        this.props.onHover(0);
+      }
       return 0;
     }
   }
