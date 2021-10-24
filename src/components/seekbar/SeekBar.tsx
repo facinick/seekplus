@@ -38,7 +38,6 @@ const next = (arr: Array<number>, currentValue: number) => {
       nextValue = mark
     }
   }
-  console.log(nextValue);
   nextValue = Math.min(Math.max.apply(0, arr), nextValue);
   return nextValue;
 }
@@ -51,7 +50,6 @@ const previous = (arr: Array<number>, currentValue: number, step: number) => {
       prevValue = mark
     }
   }
-  console.log(prevValue);
   prevValue = Math.max(Math.min.apply(0, arr), prevValue);
   return prevValue;
 }
@@ -99,7 +97,7 @@ export class SeekBar extends React.Component<Props, State> {
 
   UNSAFE_componentWillReceiveProps = (newProps: Props): void => {
     if (newProps.value !== this.props.value && !this.state.dragging) {
-      this.setValue(newProps.value)
+      this.onLocalChange(newProps.value);
     }
   };
 
@@ -135,25 +133,23 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("pointer").innerText = event.pointerId;
       //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
-      console.log(`start dragging`);
       this.setState({ dragging: true, animate: true });
-      this.setvalueFromPointerEvent(event);
+      this.setvalueFromPointerEvent(event, true);
     }
   }
 
   keepDragging = (event: any): void => {
     if (this.interactiveDiv) {
-      console.log(`dragging`);
       //@ts-ignore
       document.getElementById("drag").innerText = "dragging";
       //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       this.setState({ animate: false })
-      this.setvalueFromPointerEvent(event);
+      this.setvalueFromPointerEvent(event, true);
     }
   }
 
-  stopDragging = (event: any): void => {
+  stopDragging = async (event: any): Promise<void> => {
     if (this.interactiveDiv) {
       this.interactiveDiv.removeEventListener("pointermove", this.keepDragging);
       if (!this.interactiveDiv.hasPointerCapture(event.pointerId)) {
@@ -165,20 +161,33 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("drag").innerText = "stop dragging";
       //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
-      console.log(`stop dragging`);
-      this.setvalueFromPointerEvent(event);
       this.setState({ dragging: false, animate: false });
+      await this.stopDraggingAsync();
+      await this.setvalueFromPointerEvent(event, false);
       setTimeout(() => { this.interactiveDiv?.blur(); }, 1);
     }
   }
 
-  setvalueFromPointerEvent = (event?: any) => {
+  stopDraggingAsync = async (): Promise<void> => {
+    return new Promise(resolve => {
+      this.setState({ dragging: false, animate: false }, () => {
+        resolve();
+      });
+    })
+  }
+
+  setvalueFromPointerEvent = async (event: any, local = true): Promise<void> => {
     if (this.interactiveDiv) {
       const left = this.state.hoveredWidth || event.clientX - event.currentTarget.getBoundingClientRect().left;
       const value = (this.state.hoveredWidth || left) - interactivePaddingX;
       const width = this.interactiveDiv.getBoundingClientRect().width - 2 * interactivePaddingX;
       const newValue = (this.props.max - this.props.min) * (value / width);
-      this.setValue(newValue);
+
+      if(local) {
+        this.onLocalChange(newValue);
+      } else {
+        this.onChange(newValue);
+      }
     }
   }
 
@@ -318,51 +327,59 @@ export class SeekBar extends React.Component<Props, State> {
 
   shiftNext = (): void => {
     const newValue = next([this.props.min, this.props.max, ...this.props.marks], this.state.value);
-    this.setValue(newValue);
+    this.onChange(newValue);
   }
 
   shiftPrevious = (): void => {
     const newValue = previous([this.props.min, this.props.max, ...this.props.marks], this.state.value, this.props.step);
-
-    this.setValue(newValue);
+    this.onChange(newValue);
   }
 
   shiftUp = (by: number = this.props.step): void => {
     const newValue = this.state.value + by;
-    this.setValue(newValue);
+    this.onChange(newValue);
   }
 
   shiftDown = (by: number = this.props.step): void => {
     const newValue = this.state.value - by;
-    this.setValue(newValue);
+    this.onChange(newValue);
   }
 
   shiftMax = (): void => {
     const newValue = this.props.max;
-    this.setValue(newValue);
+    this.onChange(newValue);
   }
 
   shiftMin = (): void => {
     const newValue = this.props.min;
-    this.setValue(newValue);
+    this.onChange(newValue);
   }
 
-  setValue = (value: number): void => {
+  onChange = (newValue: number) => {
+    this.setState({
+      value: this.Value(newValue)
+    }, () => {
+      this.props.onChange(this.state.value);
+    });
+  }
+
+  onLocalChange = (newValue: number) => {
+    this.setState({
+      value: this.Value(newValue)
+    });
+  }
+
+  Value = (value: number): number => {
+
     if (value < this.props.min) {
       value = this.props.min;
     }
+
     if (value > this.props.max) {
       value = this.props.max;
     }
-    if (this.state.value === valueRound(value, this.props.step)) {
-      return;
-    }
 
-    this.setState({ value: valueRound(value, this.props.step) }, () => {
-      if(!this.state.dragging) {
-        this.props.onChange(this.state.value);
-      }
-    });
+    return valueRound(value, this.props.step);
   }
 
   sethoveredWidth = (value: number): void => {
