@@ -149,7 +149,7 @@ export class SeekBar extends React.Component<Props, State> {
     }
   }
 
-  stopDragging = async (event: any): Promise<void> => {
+  stopDragging = (event: any): void => {
     if (this.interactiveDiv) {
       this.interactiveDiv.removeEventListener("pointermove", this.keepDragging);
       if (!this.interactiveDiv.hasPointerCapture(event.pointerId)) {
@@ -162,18 +162,9 @@ export class SeekBar extends React.Component<Props, State> {
       //@ts-ignore
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       this.setState({ dragging: false, animate: false });
-      await this.stopDraggingAsync();
-      await this.setvalueFromPointerEvent(event, false);
+      this.setvalueFromPointerEvent(event, false);
       setTimeout(() => { this.interactiveDiv?.blur(); }, 1);
     }
-  }
-
-  stopDraggingAsync = async (): Promise<void> => {
-    return new Promise(resolve => {
-      this.setState({ dragging: false, animate: false }, () => {
-        resolve();
-      });
-    })
   }
 
   setvalueFromPointerEvent = async (event: any, local = true): Promise<void> => {

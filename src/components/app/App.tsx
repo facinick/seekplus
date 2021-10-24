@@ -58,7 +58,6 @@ class App extends React.Component<Props, State> {
         </div>
         <div id="progress-container">
           <SeekBar ranges={[{start: 60, end: 90}]} marks={[20, 34]} ref={this.setSeekbar} onChange={(value: number) => { 
-            console.log(value);
             this.setState({ currentDuration: value }); }} disable={disable} isTouch={is_touch} value={currentDuration} min={0} max={totalDuration} step={step} />
         </div>
         <span id="cur-value"> {currentDuration} </span>
