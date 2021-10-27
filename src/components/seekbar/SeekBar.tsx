@@ -12,8 +12,14 @@ interface Props {
 
   marks: Array<number>;
   ranges: Array<{ start: number; end: number }>;
+  styles: {
+    interactivePaddingX: number,
+    interactivePaddingY: number,
+    progressBarScaleYActive: number;
+    progressBarHeightInactive: number;
+    progressDotSizeActive: number;
+  }
 }
-
 interface State {
   dragging: boolean;
   value: number;
@@ -22,13 +28,6 @@ interface State {
   focused: boolean;
   animate: boolean;
 }
-
-const knobInactive = 0;
-const knobActive = 14;
-const interactivePaddingX = 30;
-const interactivePaddingY = 30;
-const trackHeightInactive = 6;
-const trackScaleOnActive = 2;
 
 const next = (arr: Array<number>, currentValue: number) => {
   let nextValue = Math.max(...arr);
@@ -61,6 +60,7 @@ const valueRound = (value: number, step: number): number => {
 export class SeekBar extends React.Component<Props, State> {
 
   interactiveDiv: HTMLDivElement | undefined;
+  progressDotDiv: HTMLDivElement | undefined;
 
   constructor(props: Props) {
     super(props);
@@ -101,6 +101,22 @@ export class SeekBar extends React.Component<Props, State> {
     }
   };
 
+
+  componentDidUpdate() {
+    this.updateStyles();
+  }
+
+  updateStyles = (): void => {
+    const newProps = this.props;
+    this.interactiveDiv?.style.setProperty('--progress-bar-scale-active', String(newProps.styles.progressBarScaleYActive) || '2');
+    this.interactiveDiv?.style.setProperty('--progress-bar-height-inactive', `${String(newProps.styles.progressBarHeightInactive)}px` || '10px');
+    this.progressDotDiv?.style.setProperty('--progress-dot-size-active', `${String(newProps.styles.progressDotSizeActive)}px` || '30px');
+  }
+
+  componentDidMount() {
+    this.updateStyles();
+  }
+
   onHoverStart = () => {
     this.setState({
       hovering: true,
@@ -121,7 +137,7 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   startDragging = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (this.interactiveDiv) {
+    if (this.interactiveDiv && event.button === 0 && event.buttons === 1) {
       this.interactiveDiv.setPointerCapture(event.pointerId);
       if (!this.interactiveDiv.hasPointerCapture(event.pointerId)) {
         return;
@@ -163,15 +179,14 @@ export class SeekBar extends React.Component<Props, State> {
       document.getElementById("capture").innerText = this.interactiveDiv.hasPointerCapture(event.pointerId) ? "Capturing" : "Not Capturing";
       this.setState({ dragging: false, animate: false });
       this.setvalueFromPointerEvent(event, false);
-      setTimeout(() => { this.interactiveDiv?.blur(); }, 1);
     }
   }
 
   setvalueFromPointerEvent = async (event: any, local = true): Promise<void> => {
     if (this.interactiveDiv) {
       const left = this.state.hoveredWidth || event.clientX - event.currentTarget.getBoundingClientRect().left;
-      const value = (this.state.hoveredWidth || left) - interactivePaddingX;
-      const width = this.interactiveDiv.getBoundingClientRect().width - 2 * interactivePaddingX;
+      const value = (this.state.hoveredWidth || left) - this.props.styles.interactivePaddingX;
+      const width = this.interactiveDiv.getBoundingClientRect().width - 2 * this.props.styles.interactivePaddingX;
       const newValue = (this.props.max - this.props.min) * (value / width);
 
       if(local) {
@@ -186,7 +201,7 @@ export class SeekBar extends React.Component<Props, State> {
     if (this.interactiveDiv) {
       const value = this.state.hoveredWidth;
       const max = this.interactiveDiv.getBoundingClientRect().width;
-      let percentage = (value - interactivePaddingX) / (max - 2 * interactivePaddingX) * 100;
+      let percentage = (value - this.props.styles.interactivePaddingX) / (max - 2 * this.props.styles.interactivePaddingX) * 100;
       if (percentage < 0) {
         percentage = 0;
       }
@@ -234,7 +249,7 @@ export class SeekBar extends React.Component<Props, State> {
     const value = this.state.value;
     const valuePercentage = value * 100 / (this.props.max);
     const hoveredWidth = this.state.hoveredWidth;
-    const { max, min, isTouch, disable, marks, ranges } = this.props;
+    const { max, min, isTouch, disable, marks, ranges, styles } = this.props;
     const disableHoverInteractions = isTouch || disable;
     const disablePointerInteractions = disable;
 
@@ -254,10 +269,10 @@ export class SeekBar extends React.Component<Props, State> {
           `
           }
           style={{
-            paddingLeft: `${interactivePaddingX}px`,
-            paddingRight: `${interactivePaddingX}px`,
-            paddingTop: `${interactivePaddingY}px`,
-            paddingBottom: `${interactivePaddingY}px`,
+            paddingLeft: `${styles.interactivePaddingX}px`,
+            paddingRight: `${styles.interactivePaddingX}px`,
+            paddingTop: `${styles.interactivePaddingY}px`,
+            paddingBottom: `${styles.interactivePaddingY}px`,
           }}
           ref={this.setInteractiveElement}
           onMouseEnter={disableHoverInteractions ? () => { } : this.onHoverStart}
@@ -293,6 +308,7 @@ export class SeekBar extends React.Component<Props, State> {
             <div
               aria-label={`${this.state.value}`}
               id="progress-dot"
+              ref={this.setProgressDotElement}
               style={{ left: `${this.getValuePercentage()}%`, }}
             />
           </div>
@@ -316,7 +332,7 @@ export class SeekBar extends React.Component<Props, State> {
           <p>step: {this.props.step}</p>
           {this.props.isTouch && <p>Touch</p>}
           {this.interactiveDiv && <p>progresbar width with padding: {this.interactiveDiv.clientWidth}</p>}
-          {this.interactiveDiv && <p>progresbar width without padding: {this.interactiveDiv.clientWidth - 2 * interactivePaddingX}</p>}
+          {this.interactiveDiv && <p>progresbar width without padding: {this.interactiveDiv.clientWidth - 2 * styles.interactivePaddingX}</p>}
         </div>
       </>
     );
@@ -398,6 +414,12 @@ export class SeekBar extends React.Component<Props, State> {
   setInteractiveElement = (element: HTMLDivElement): void => {
     if (!this.interactiveDiv && element) {
       this.interactiveDiv = element;
+    }
+  };
+
+  setProgressDotElement = (element: HTMLDivElement): void => {
+    if (!this.progressDotDiv && element) {
+      this.progressDotDiv = element;
     }
   };
 }

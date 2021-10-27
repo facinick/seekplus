@@ -1,7 +1,3 @@
-$progress-dot-size-active: 30px;
-$progress-bar-scale-active: 2;
-$progress-bar-height-inactive: 10px;
-$progress-interactive-area: 16px;
 $progress-color: #DB4437;
 $progress-dot-color: #F4B400;
 $progress-hover-color: #0F9D58;
@@ -23,14 +19,14 @@ $progress-all-color: white;
 
 @mixin progress-dot-active() {
     top: 50%;
-    width: $progress-dot-size-active;
-    height: $progress-dot-size-active;
+    width: var(--progress-dot-size-active);
+    height: var(--progress-dot-size-active);
     transform: translateY(-50%) translateX(-50%);
     background-color: $progress-dot-color;
 }
 
 @mixin progress-bar-active() {
-    transform: scaleY($progress-bar-scale-active);
+    transform: scaleY(var(--progress-bar-scale-active));
 }
 
 @mixin disable() {
@@ -44,7 +40,6 @@ $progress-all-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: $progress-interactive-area;
     cursor: pointer;
     box-sizing: border-box;
     outline: 0.5px solid white;
@@ -60,13 +55,13 @@ $progress-all-color: white;
     &.animate {
         #progress-bar-list {
             #played {
-            transition: 0.2s ease-out width;
+                transition: 0.2s ease-out width;
+            }
         }
-    }
     }
 
     #progress-bar-list {
-        height: $progress-bar-height-inactive;
+        height: var(--progress-bar-height-inactive);
         width: 100%;
         transition: 0.2s ease-out transform;
         position: relative;
@@ -100,7 +95,7 @@ $progress-all-color: white;
             pointer-events: none;
         }
 
-        .mark{
+        .mark {
             width: 1px;
             height: 100%;
             opacity: 0.6;
@@ -109,7 +104,7 @@ $progress-all-color: white;
             z-index: 3;
         }
 
-        .range{
+        .range {
             height: 100%;
             opacity: 0.6;
             background-color: $progress-range-color;
@@ -140,13 +135,23 @@ $progress-all-color: white;
         }
     }
 
-    &.focused {
+    &:focus-visible {
+
         #progress-dot{
+            @include progress-dot-active;
+            outline: 3px solid white;
+            outline-offset: 3px;
+            box-shadow: rgba(0, 127, 255, 0.36) 0px 0px 0px 8px
+        }
+        
+    }
+    
+    &.dragging {
+        #progress-dot {
             box-shadow: rgba(0, 127, 255, 0.36) 0px 0px 0px 8px
         }
     }
 
-    &.focused,
     &.dragging,
     &.hovering {
         #progress-dot {
@@ -176,13 +181,13 @@ $progress-all-color: white;
     }
 
     &.focused {
-        #progress-dot{
+        #progress-dot {
             box-shadow: none;
         }
     }
 
     &.dragging {
-        #progress-dot{
+        #progress-dot {
             box-shadow: rgba(0, 127, 255, 0.36) 0px 0px 0px 8px
         }
     }
@@ -191,7 +196,7 @@ $progress-all-color: white;
     &.dragging,
     &.hovering {
         #progress-bar-list {
-            height: $progress-bar-height-inactive;
+            height: var(--progress-bar-height-inactive);
             transform: none;
         }
     }
