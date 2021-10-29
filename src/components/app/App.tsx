@@ -75,11 +75,16 @@ class App extends React.Component<Props, State> {
         <div id="progress-container">
           <SeekBar 
             onHover={(value) => {}} 
-            ranges={[{start: 60, end: 90}]} 
+            ranges={[{start: 60, end: 90}, {start: 80, end: 110}]} 
             marks={[20, 34]} 
-            ref={this.setSeekbar} 
+            ref={this.setSeekbar}
+
             onChange={(value: number) => { 
               this.setState({ currentDuration: value }); 
+            }} 
+
+            onInput={(value: number) => { 
+             console.log(`value: ${value}`);
             }} 
             disable={disable} 
             isTouch={is_touch} 

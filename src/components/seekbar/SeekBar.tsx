@@ -2,6 +2,7 @@ import * as React from 'react';
 import './SeekBar.scss';
 interface Props {
   onChange: (value: number) => void;
+  onInput: (value: number) => void;
   onHover: (value: number) => void;
   disable: boolean;
   isTouch: boolean;
@@ -27,9 +28,13 @@ interface State {
   hovering: boolean;
   focused: boolean;
   animate: boolean;
+  marksAndRanges: Array<{ start: number; end: number }>;
 }
 
-const next = (arr: Array<number>, currentValue: number) => {
+const next = (arrr: Array<{ start: number; end: number }>, currentValue: number) => {
+
+  const arr = arrr.map((markAndRange => markAndRange.start));
+
   let nextValue = Math.max(...arr);
   for (let i = 0; i < arr.length; i++) {
     const mark = arr[i];
@@ -41,7 +46,10 @@ const next = (arr: Array<number>, currentValue: number) => {
   return nextValue;
 }
 
-const previous = (arr: Array<number>, currentValue: number, step: number) => {
+const previous = (arrr: Array<{ start: number; end: number }>, currentValue: number, step: number) => {
+
+  const arr = arrr.map((markAndRange => markAndRange.start));
+
   let prevValue = Math.min(...arr);
   for (let i = 0; i < arr.length; i++) {
     const mark = arr[i];
@@ -64,6 +72,10 @@ export class SeekBar extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+
+    const marksAsRanges = [...props.marks.map(mark => ({ start: mark, end: -1 }))];
+    const marksAndRanges = [...marksAsRanges, ...props.ranges];
+
     this.state = {
       dragging: false,
       hovering: false,
@@ -71,7 +83,17 @@ export class SeekBar extends React.Component<Props, State> {
       animate: false,
       value: this.props.value,
       hoveredWidth: 0,
+      marksAndRanges: [...marksAndRanges.sort(
+        (rangeA, rangeB) => {
+          if (rangeA.start < rangeB.start) {
+            return -1;
+          }
+
+          return 1;
+        }
+      )],
     };
+
     this.setupKeyboardControl();
   }
 
@@ -99,11 +121,30 @@ export class SeekBar extends React.Component<Props, State> {
     if (newProps.value !== this.props.value && !this.state.dragging) {
       this.onLocalChange(newProps.value);
     }
+
+
+    this.updateMarksAndRanges(newProps.ranges, newProps.marks);
   };
 
 
   componentDidUpdate() {
     this.updateStyles();
+  }
+
+  updateMarksAndRanges = (ranges: Array<{ start: number; end: number }>, marks: Array<number>) => {
+    const marksAsRanges = marks.map(mark => ({ start: mark, end: -1 }));
+    const marksAndRanges = [...marksAsRanges, ...ranges];
+    this.setState({
+      marksAndRanges: [...marksAndRanges.sort(
+        (rangeA, rangeB) => {
+          if (rangeA.start < rangeB.start) {
+            return -1;
+          }
+
+          return 1;
+        }
+      )]
+    })
   }
 
   updateStyles = (): void => {
@@ -189,7 +230,12 @@ export class SeekBar extends React.Component<Props, State> {
       const width = this.interactiveDiv.getBoundingClientRect().width - 2 * this.props.styles.interactivePaddingX;
       const newValue = (this.props.max - this.props.min) * (value / width);
 
-      if(local) {
+
+      // if(this.Value(newValue) === this.state.value) {
+      //   return;
+      // }
+
+      if (local) {
         this.onLocalChange(newValue);
       } else {
         this.onChange(newValue);
@@ -208,12 +254,12 @@ export class SeekBar extends React.Component<Props, State> {
       if (percentage > 100) {
         percentage = 100;
       }
-      if(this.state.hovering) {
+      if (this.state.hovering) {
         this.props.onHover(percentage);
       }
       return percentage;
     } else {
-      if(this.state.hovering) {
+      if (this.state.hovering) {
         this.props.onHover(0);
       }
       return 0;
@@ -224,15 +270,15 @@ export class SeekBar extends React.Component<Props, State> {
     return this.state.value * 100 / this.props.max;
   }
 
-  getRangeWidthPercentage = (range: {start: number; end: number}) => {
-    const {start, end} = range;
+  getRangeWidthPercentage = (range: { start: number; end: number }) => {
+    const { start, end } = range;
     const rangeWidth = end - start;
     const totalWidth = this.props.max - this.props.min;
     return rangeWidth * 100 / totalWidth;
   }
 
-  getRangeLeftPercentage = (range: {start: number; end: number}) => {
-    const {start} = range;
+  getRangeLeftPercentage = (range: { start: number; end: number }) => {
+    const { start } = range;
     return start * 100 / this.props.max;
   }
 
@@ -252,9 +298,7 @@ export class SeekBar extends React.Component<Props, State> {
     const { max, min, isTouch, disable, marks, ranges, styles } = this.props;
     const disableHoverInteractions = isTouch || disable;
     const disablePointerInteractions = disable;
-
-    const { hovering, dragging, focused, animate } = this.state;
-
+    const { hovering, dragging, focused, animate, } = this.state;
     return (
       <>
         <div
@@ -297,8 +341,8 @@ export class SeekBar extends React.Component<Props, State> {
               ))}
 
               {ranges.map(range => (
-                <div 
-                  key={range.start * range.end * Math.random() * Math.random() * Math.random()} 
+                <div
+                  key={range.start * range.end * Math.random() * Math.random() * Math.random()}
                   style={{ width: `${this.getRangeWidthPercentage(range)}%`, left: `${this.getRangeLeftPercentage(range)}%` }}
                   className='range'
                 />
@@ -339,12 +383,12 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   shiftNext = (): void => {
-    const newValue = next([this.props.min, this.props.max, ...this.props.marks], this.state.value);
+    const newValue = next([{ start: this.props.min, end: -1 }, { start: this.props.max, end: -1 }, ...this.state.marksAndRanges], this.state.value);
     this.onChange(newValue);
   }
 
   shiftPrevious = (): void => {
-    const newValue = previous([this.props.min, this.props.max, ...this.props.marks], this.state.value, this.props.step);
+    const newValue = previous([{ start: this.props.min, end: -1 }, { start: this.props.max, end: -1 }, ...this.state.marksAndRanges], this.state.value, this.props.step);
     this.onChange(newValue);
   }
 
@@ -369,16 +413,27 @@ export class SeekBar extends React.Component<Props, State> {
   }
 
   onChange = (newValue: number) => {
+    const newValueCapped = this.Value(newValue);
+
     this.setState({
-      value: this.Value(newValue)
+      value: newValueCapped
     }, () => {
+      if (this.state.dragging) {
+        this.props.onInput(this.state.value)
+      }
       this.props.onChange(this.state.value);
     });
   }
 
   onLocalChange = (newValue: number) => {
+    const newValueCapped = this.Value(newValue);
+
     this.setState({
-      value: this.Value(newValue)
+      value: newValueCapped
+    }, () => {
+      if (this.state.dragging) {
+        this.props.onInput(this.state.value)
+      }
     });
   }
 
